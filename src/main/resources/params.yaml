@@ -1,0 +1,8 @@
+
+host : "api.worldoftanks.asia"
+application_id : 1b07a9f6ca844b9af17f50761491c439
+
+api :
+  account :
+    list : "/wot/account/list/"
+  vehicles : "/wot/encyclopedia/vehicles/"
