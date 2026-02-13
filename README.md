@@ -26,4 +26,7 @@
 # 配置数据可视化视图
 
 # 效果
+![数据看板](https://github.com/zhaoming-mike/wot-data/blob/main/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%20BI3.png)
 ![数据看板](https://github.com/zhaoming-mike/wot-data/blob/main/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%20BI.png)
+![数据看板](https://github.com/zhaoming-mike/wot-data/blob/main/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%20BI2.png)
+
