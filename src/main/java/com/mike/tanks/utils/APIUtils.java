@@ -4,15 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mike.tanks.config.YamlConfig;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.security.cert.X509Certificate;
 
 public class APIUtils {
@@ -25,8 +23,10 @@ public class APIUtils {
     static ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     private static YamlConfig config = YamlConfig.of("params.yaml");
-    private static String host = config.getString("host");
-    private static String application_id = config.getString("application_id");
+    private static String wg_host = config.getString("wg-host");
+    private static String wx_host = config.getString("wx-host");
+    private static String wg_application_id = config.getString("wg-application-id");
+    private static String wx_webhook_tank_sheet_key = config.getString("wx-webhook.tank-sheet-key");
 
     static {
         try {
@@ -55,7 +55,7 @@ public class APIUtils {
 
     public static Object getAllVehicles(String tier, String nation) {
         Object result = null;
-        String logicCall = config.getString("api.vehicles");
+        String logicCall = config.getString("wg-api.vehicles");
 
         HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
                 .addPathSegment(logicCall)
@@ -68,7 +68,7 @@ public class APIUtils {
 
     public static JsonNode getAllVehiclesNode(String tier) {
         JsonNode result = null;
-        String logicCall = config.getString("api.vehicles");
+        String logicCall = config.getString("wg-api.vehicles");
 
         HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
                 .addPathSegment(logicCall)
@@ -80,7 +80,7 @@ public class APIUtils {
 
     public static JsonNode getAllVehiclesNode(String tier, String nation) {
         JsonNode result = null;
-        String logicCall = config.getString("api.vehicles");
+        String logicCall = config.getString("wg-api.vehicles");
 
         HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
                 .addPathSegment(logicCall)
@@ -93,7 +93,7 @@ public class APIUtils {
 
     public static Object getAllVehicles(String tier) {
         Object result = null;
-        String logicCall = config.getString("api.vehicles");
+        String logicCall = config.getString("wg-api.vehicles");
 
         HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
                 .addPathSegment(logicCall)
@@ -105,7 +105,7 @@ public class APIUtils {
 
     public static Object findPlayer(String nickname) {
         Object result = null;
-        String logicCall = config.getString("api.account.list");
+        String logicCall = config.getString("wg-api.account.list");
 
         HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
                 .addPathSegment(logicCall)
@@ -117,8 +117,8 @@ public class APIUtils {
 
     private static JsonNode makeCall2Node(HttpUrl.Builder urlBuilder, JsonNode result) {
         urlBuilder.scheme("https")
-                .addQueryParameter("application_id", application_id)
-                .host(host);
+                .addQueryParameter("application_id", wg_application_id)
+                .host(wg_host);
         Request request = new Request.Builder()
                 .url(urlBuilder.build())
                 .build();
@@ -135,8 +135,8 @@ public class APIUtils {
 
     private static Object makeCall(HttpUrl.Builder urlBuilder, Object result) {
         urlBuilder.scheme("https")
-                .addQueryParameter("application_id", application_id)
-                .host(host);
+                .addQueryParameter("application_id", wg_application_id)
+                .host(wg_host);
         Request request = new Request.Builder()
                 .url(urlBuilder.build())
                 .build();
@@ -151,14 +151,36 @@ public class APIUtils {
         return result;
     }
 
-    public static String aa(Object obj) {
-        String result = null;
-        try {
-            result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
-        } catch (Throwable e) {
+    public static void pushData2WX(String jsonData) {
+        String logicCall = config.getString("wx-api.smartsheet-webhook");
+
+        HttpUrl.Builder urlBuilder = new HttpUrl.Builder()
+                .addPathSegment(logicCall);
+
+        push2WX(urlBuilder, jsonData);
+    }
+
+    private static void push2WX(HttpUrl.Builder urlBuilder, String jsonData) {
+        urlBuilder.scheme("https")
+                .addQueryParameter("key", wx_webhook_tank_sheet_key)
+                .host(wx_host);
+
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json"),
+                jsonData
+        );
+
+        Request request = new Request.Builder()
+                .url(URLDecoder.decode(urlBuilder.build().toString())) // 腾讯的接口不能正确解码，需要手工处理。
+                .post(body)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            byte[] bytes = response.body().bytes();
+            System.out.println(new String(bytes));
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return result;
     }
 
 

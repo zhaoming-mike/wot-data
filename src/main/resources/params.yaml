@@ -1,8 +1,12 @@
+wg-host: "api.worldoftanks.asia"
+wg-application-id: "1b07a9f6ca844b9af17f50761491c439"
+wg-api:
+  account:
+    list: "wot/account/list/"
+  vehicles: "wot/encyclopedia/vehicles/"
 
-host : "api.worldoftanks.asia"
-application_id : 1b07a9f6ca844b9af17f50761491c439
-
-api :
-  account :
-    list : "/wot/account/list/"
-  vehicles : "/wot/encyclopedia/vehicles/"
+wx-host: "qyapi.weixin.qq.com"
+wx-webhook:
+  tank-sheet-key: "X85In3V7MR8ZmFgr0kUxbx06tcaKhxafEtayjvaqwIfO6P2EnhJJaKdqMmyv8F4p32snULjeT9TnMgUCIqHHpskErPOyxRDeWG8JlSw3IWc"
+wx-api:
+  smartsheet-webhook: "cgi-bin/wedoc/smartsheet/webhook"

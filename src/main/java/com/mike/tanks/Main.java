@@ -45,6 +45,39 @@ public class Main {
             JsonNode ammoADamage = ammoA.get("damage");
             JsonNode ammoADamage0 = ammoADamage.get(1);
             System.out.println(tankId + "\t" + nationStr + "\t" + tierStr + "\t" + is_premiumStr + "\t" + ammoADamage0 + "\t" + dispersion + "\t" + move_down_arc + "\t" + short_nameStr + "\t" + big_icon_url);
+
+            String json = "{\n" +
+                    "  \"schema\": {\n" +
+                    "    \"fFvlRJ\": \"TANK ID\",\n" +
+                    "    \"f2Ug8c\": \"国家\",\n" +
+                    "    \"fsSD6d\": \"等级\",\n" +
+                    "    \"fd3J7k\": \"金币车\",\n" +
+                    "    \"fRCJUi\": \"默认火炮均伤\",\n" +
+                    "    \"fy4KZG\": \"百米散布\",\n" +
+                    "    \"f5VSKa\": \"俯角（度°）\",\n" +
+                    "    \"fprcbn\": \"坦克名称\",\n" +
+                    "    \"f1DnGA\": \"预览\"\n" +
+                    "  },\n" +
+                    "  \"add_records\": [\n" +
+                    "    {\n" +
+                    "      \"values\": {\n" +
+                    "        \"fFvlRJ\": " + tankId + ",\n" +
+                    "        \"f2Ug8c\": \"" + nationStr + "\",\n" +
+                    "        \"fsSD6d\": \"" + tierStr + "\",\n" +
+                    "        \"fd3J7k\": \"" + is_premiumStr + "\",\n" +
+                    "        \"fRCJUi\": " + ammoADamage0 + ",\n" +
+                    "        \"fy4KZG\": " + dispersion + ",\n" +
+                    "        \"f5VSKa\": " + move_down_arc + ",\n" +
+                    "        \"fprcbn\": \"" + short_nameStr + "\",\n" +
+                    "        \"f1DnGA\": [{\"link\": \"" + big_icon_url + "\", \"text\": \"点击查看\"}]\n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "  ]\n" +
+                    "}";
+
+            //速度太慢，不要用这个方法更新（单条记录可以使用）
+            //APIUtils.pushData2WX(json);
+
         }
     }
 
