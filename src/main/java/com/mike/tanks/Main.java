@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mike.tanks.utils.APIUtils;
 import com.mike.tanks.utils.CountryCodeConverter;
 import com.mike.tanks.utils.FeishuBitableClient;
+import com.mike.tanks.utils.TankModelConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -24,6 +25,8 @@ public class Main {
             JsonNode is_premium = next.get("is_premium");
             String is_premiumStr = cutBoolean(is_premium);
             JsonNode tier = next.get("tier");
+            JsonNode type = next.get("type");
+            String typeStr = cutType(type);
             String tierStr = intToRoman(tier);
             JsonNode images = next.get("images");
             JsonNode big_icon = images.get("big_icon");
@@ -54,17 +57,18 @@ public class Main {
 
             //push2WX(tankId, nationStr, tierStr, is_premiumStr, ammoADamage0, dispersion, move_down_arc, short_nameStr, big_icon_url);
 
-            recordsList.add(makeRecord(tankId, nationStr, tierStr, is_premiumStr, ammoADamage0, dispersion, move_down_arc, short_nameStr, big_icon_url));
+            recordsList.add(makeRecord(tankId, nationStr, tierStr, typeStr, is_premiumStr, ammoADamage0, dispersion, move_down_arc, short_nameStr, big_icon_url));
 
         }
         push2FS(recordsList);
     }
 
-    private static Map<String, Object> makeRecord(JsonNode tankId, String nationStr, String tierStr, String isPremiumStr, JsonNode ammoADamage0, JsonNode dispersion, JsonNode moveDownArc, String shortNameStr, String bigIconUrl) {
+    private static Map<String, Object> makeRecord(JsonNode tankId, String nationStr, String tierStr, String typeStr, String isPremiumStr, JsonNode ammoADamage0, JsonNode dispersion, JsonNode moveDownArc, String shortNameStr, String bigIconUrl) {
         Map<String, Object> fields = new HashMap<>();
         fields.put("TANK ID", tankId.intValue());
         fields.put("国家", nationStr);
         fields.put("等级", tierStr);
+        fields.put("车型", typeStr);
         fields.put("金币车", isPremiumStr);
         fields.put("默认炮火均伤", ammoADamage0.intValue());
         fields.put("百米散布", dispersion.floatValue());
@@ -163,6 +167,13 @@ public class Main {
         String text = node.toString();
         text = text.replaceAll("\"", "");
         return text;
+    }
+
+    @NotNull
+    private static String cutType(JsonNode type) {
+        String text = type.toString();
+        text = text.replaceAll("\"", "");
+        return TankModelConverter.convertToChinese(text);
     }
 
     @NotNull
