@@ -52,18 +52,20 @@ public class Main {
             JsonNode ammoA = jsonNode;
             JsonNode ammoAType = ammoA.get("type");
             JsonNode ammoADamage = ammoA.get("damage");
+            JsonNode ammoAPenetration = ammoA.get("penetration");
             JsonNode ammoADamage0 = ammoADamage.get(1);
+            JsonNode ammoAPenetration0 = ammoAPenetration.get(1);
             System.out.println(tankId + "\t" + nationStr + "\t" + tierStr + "\t" + is_premiumStr + "\t" + ammoADamage0 + "\t" + dispersion + "\t" + move_down_arc + "\t" + short_nameStr + "\t" + big_icon_url);
 
             //push2WX(tankId, nationStr, tierStr, is_premiumStr, ammoADamage0, dispersion, move_down_arc, short_nameStr, big_icon_url);
 
-            recordsList.add(makeRecord(tankId, nationStr, tierStr, typeStr, is_premiumStr, ammoADamage0, dispersion, move_down_arc, short_nameStr, big_icon_url));
+            recordsList.add(makeRecord(tankId, nationStr, tierStr, typeStr, is_premiumStr, ammoADamage0, ammoAPenetration0, dispersion, move_down_arc, short_nameStr, big_icon_url));
 
         }
         push2FS(recordsList);
     }
 
-    private static Map<String, Object> makeRecord(JsonNode tankId, String nationStr, String tierStr, String typeStr, String isPremiumStr, JsonNode ammoADamage0, JsonNode dispersion, JsonNode moveDownArc, String shortNameStr, String bigIconUrl) {
+    private static Map<String, Object> makeRecord(JsonNode tankId, String nationStr, String tierStr, String typeStr, String isPremiumStr, JsonNode ammoADamage0, JsonNode ammoAPenetration0, JsonNode dispersion, JsonNode moveDownArc, String shortNameStr, String bigIconUrl) {
         Map<String, Object> fields = new HashMap<>();
         fields.put("TANK ID", tankId.intValue());
         fields.put("国家", nationStr);
@@ -71,6 +73,7 @@ public class Main {
         fields.put("车型", typeStr);
         fields.put("金币车", isPremiumStr);
         fields.put("默认炮火均伤", ammoADamage0.intValue());
+        fields.put("默认炮火穿深", ammoAPenetration0.intValue());
         fields.put("百米散布", dispersion.floatValue());
         fields.put("俯角（度°）", moveDownArc.intValue());
         fields.put("坦克名称", shortNameStr);
