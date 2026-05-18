@@ -16,7 +16,8 @@ public class Main {
 
     public static void main(String[] args) throws Throwable {
 
-        JsonNode vehicles = APIUtils.getAllVehiclesNode("1,2,3,4,5,6,7,8,9,10,11");
+//        JsonNode vehicles = APIUtils.getAllVehiclesNode("9,10,11");
+        JsonNode vehicles = APIUtils.getAllVehiclesNode("1,2,3,4,5,6,7,8");
 
         java.util.List<Map<String, Object>> recordsList = new java.util.ArrayList<>();
 
@@ -31,49 +32,50 @@ public class Main {
             JsonNode images = next.get("images");
             JsonNode big_icon = images.get("big_icon");
 
-            String big_icon_url = cut(big_icon);
+            String big_icon_url = noQuot(big_icon);
 
             JsonNode nation = next.get("nation");
-            String nationStr = cut(nation);
+            String nationStr = noQuot(nation);
             nationStr = CountryCodeConverter.convert(nationStr);
             JsonNode name = next.get("name");
             JsonNode short_name = next.get("short_name");
-            String nameStr = cut(name);
-            String short_nameStr = cut(short_name);
+            String nameStr = noQuot(name);
+            String short_nameStr = noQuot(short_name);
             JsonNode defaultProfile = next.get("default_profile");
             JsonNode ammo = defaultProfile.get("ammo");
             JsonNode gun = defaultProfile.get("gun");
             JsonNode dispersion = gun.get("dispersion");
             JsonNode move_down_arc = gun.get("move_down_arc");
-            JsonNode jsonNode = ammo.get(1);
-            if (jsonNode == null) {
-                jsonNode = ammo.get(0);
+
+            String ammoInfo = "";
+            for (int i = 0; i < ammo.size(); i++) {
+                if(i!=0) ammoInfo += "@";
+                JsonNode eachAmmo = ammo.get(i);
+                JsonNode ammoAType = eachAmmo.get("type");
+                JsonNode ammoADamage = eachAmmo.get("damage");
+                JsonNode ammoAPenetration = eachAmmo.get("penetration");
+                JsonNode ammoADamageMiddle = ammoADamage.get(1);
+                JsonNode ammoAPenetrationMiddle = ammoAPenetration.get(1);
+                ammoInfo += noQuot(ammoAType) + "_" + ammoADamageMiddle + "_" + ammoAPenetrationMiddle;
             }
-            JsonNode ammoA = jsonNode;
-            JsonNode ammoAType = ammoA.get("type");
-            JsonNode ammoADamage = ammoA.get("damage");
-            JsonNode ammoAPenetration = ammoA.get("penetration");
-            JsonNode ammoADamage0 = ammoADamage.get(1);
-            JsonNode ammoAPenetration0 = ammoAPenetration.get(1);
-            System.out.println(tankId + "\t" + nationStr + "\t" + tierStr + "\t" + is_premiumStr + "\t" + ammoADamage0 + "\t" + dispersion + "\t" + move_down_arc + "\t" + short_nameStr + "\t" + big_icon_url);
+            System.out.println(tankId + "\t" + nationStr + "\t" + tierStr + "\t" + typeStr + "\t" + is_premiumStr + "\t" + ammoInfo + "\t" + dispersion + "\t" + move_down_arc + "\t" + short_nameStr + "\t" + big_icon_url);
 
             //push2WX(tankId, nationStr, tierStr, is_premiumStr, ammoADamage0, dispersion, move_down_arc, short_nameStr, big_icon_url);
 
-            recordsList.add(makeRecord(tankId, nationStr, tierStr, typeStr, is_premiumStr, ammoADamage0, ammoAPenetration0, dispersion, move_down_arc, short_nameStr, big_icon_url));
+            recordsList.add(makeRecord(tankId, nationStr, tierStr, typeStr, is_premiumStr, ammoInfo, dispersion, move_down_arc, short_nameStr, big_icon_url));
 
         }
         push2FS(recordsList);
     }
 
-    private static Map<String, Object> makeRecord(JsonNode tankId, String nationStr, String tierStr, String typeStr, String isPremiumStr, JsonNode ammoADamage0, JsonNode ammoAPenetration0, JsonNode dispersion, JsonNode moveDownArc, String shortNameStr, String bigIconUrl) {
+    private static Map<String, Object> makeRecord(JsonNode tankId, String nationStr, String tierStr, String typeStr, String isPremiumStr, String ammoInfo, JsonNode dispersion, JsonNode moveDownArc, String shortNameStr, String bigIconUrl) {
         Map<String, Object> fields = new HashMap<>();
         fields.put("TANK ID", tankId.intValue());
         fields.put("国家", nationStr);
         fields.put("等级", tierStr);
         fields.put("车型", typeStr);
         fields.put("金币车", isPremiumStr);
-        fields.put("默认炮火均伤", ammoADamage0.intValue());
-        fields.put("默认炮火穿深", ammoAPenetration0.intValue());
+        fields.put("弹药数据", ammoInfo);
         fields.put("百米散布", dispersion.floatValue());
         fields.put("俯角（度°）", moveDownArc.intValue());
         fields.put("坦克名称", shortNameStr);
@@ -165,9 +167,11 @@ public class Main {
         //APIUtils.pushData2WX(json);
     }
 
+
     @NotNull
-    private static String cut(JsonNode node) {
+    private static String noQuot(JsonNode node) {
         String text = node.toString();
+        // 文本前后会带单引号
         text = text.replaceAll("\"", "");
         return text;
     }
