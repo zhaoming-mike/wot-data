@@ -46,6 +46,7 @@ public class Main {
             JsonNode gun = defaultProfile.get("gun");
             JsonNode dispersion = gun.get("dispersion");
             JsonNode move_down_arc = gun.get("move_down_arc");
+            JsonNode reload_time = gun.get("reload_time");
 
             String ammoInfo = "";
             for (int i = 0; i < ammo.size(); i++) {
@@ -58,17 +59,17 @@ public class Main {
                 JsonNode ammoAPenetrationMiddle = ammoAPenetration.get(1);
                 ammoInfo += noQuot(ammoAType) + "_" + ammoADamageMiddle + "_" + ammoAPenetrationMiddle;
             }
-            System.out.println(tankId + "\t" + nationStr + "\t" + tierStr + "\t" + typeStr + "\t" + is_premiumStr + "\t" + ammoInfo + "\t" + dispersion + "\t" + move_down_arc + "\t" + short_nameStr + "\t" + big_icon_url);
+            System.out.println(tankId + "\t" + nationStr + "\t" + tierStr + "\t" + typeStr + "\t" + is_premiumStr + "\t" + ammoInfo + "\t" + dispersion + "\t" + move_down_arc + "\t" + reload_time + "\t" + short_nameStr + "\t" + big_icon_url);
 
             //push2WX(tankId, nationStr, tierStr, is_premiumStr, ammoADamage0, dispersion, move_down_arc, short_nameStr, big_icon_url);
 
-            recordsList.add(makeRecord(tankId, nationStr, tierStr, typeStr, is_premiumStr, ammoInfo, dispersion, move_down_arc, short_nameStr, big_icon_url));
+            recordsList.add(makeRecord(tankId, nationStr, tierStr, typeStr, is_premiumStr, ammoInfo, dispersion, reload_time, move_down_arc, short_nameStr, big_icon_url));
 
         }
         push2FS(recordsList);
     }
 
-    private static Map<String, Object> makeRecord(JsonNode tankId, String nationStr, String tierStr, String typeStr, String isPremiumStr, String ammoInfo, JsonNode dispersion, JsonNode moveDownArc, String shortNameStr, String bigIconUrl) {
+    private static Map<String, Object> makeRecord(JsonNode tankId, String nationStr, String tierStr, String typeStr, String isPremiumStr, String ammoInfo, JsonNode dispersion, JsonNode reloadTime, JsonNode moveDownArc, String shortNameStr, String bigIconUrl) {
         Map<String, Object> fields = new HashMap<>();
         fields.put("TANK ID", tankId.intValue());
         fields.put("国家", nationStr);
@@ -77,6 +78,7 @@ public class Main {
         fields.put("金币车", isPremiumStr);
         fields.put("弹药数据", ammoInfo);
         fields.put("百米散布", dispersion.floatValue());
+        fields.put("装填（秒）", reloadTime.intValue());
         fields.put("俯角（度°）", moveDownArc.intValue());
         fields.put("坦克名称", shortNameStr);
 
